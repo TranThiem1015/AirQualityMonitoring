@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>HỆ THỐNG GIÁM SÁT KHÔNG KHÍ THỜI GIAN THỰC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBg5qErVO7vyS9Nu8fx0PY1yd1qBslRXI8&callback=initMap" async defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="info-panel">
+    <div class="header-section">
+      <strong>ĐẠI HỌC BÁCH KHOA THÀNH PHỐ HỒ CHÍ MINH</strong><br>
+      <strong>MÔN HỌC: LẬP TRÌNH HỆ THỐNG NHÚNG NÂNG CAO</strong><br>
+      <strong>HỆ THỐNG GIÁM SÁT KHÔNG KHÍ THỜI GIAN THỰC</strong><br>
+    </div>
+    
+    <div class="section">
+      <strong>GVHD: PGS.TS. TRƯƠNG QUANG VINH</strong><br>
+      <strong>Nhóm thực hiện:</strong><br>
+      Trần Thị Thiêm   -  2470142<br>
+      Nguyễn Văn Hùng  -  2470139<br>
+      Trần Văn Nguyên  -  2470144
+    </div>
+
+    <div class="section">
+      <strong>Chọn ngày:</strong><br>
+      <select id="queryTypeSelect" onchange="handleQueryTypeChange()">
+        <option value="oneDay">Một ngày</option>
+        <option value="range">Nhiều ngày</option>
+      </select>
+      <input type="text" id="dateRange" placeholder="Chọn ngày" />
+    </div>
+
+    <div class="section">
+      <strong>Chọn giờ (0–23):</strong><br>
+      <select id="selectedHour">
+        <option value="">-- Cả ngày --</option>
+        <option value="00">00</option>
+        <option value="01">01</option>
+        <option value="02">02</option>
+        <option value="03">03</option>
+        <option value="04">04</option>
+        <option value="05">05</option>
+        <option value="06">06</option>
+        <option value="07">07</option>
+        <option value="08">08</option>
+        <option value="09">09</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+        <option value="21">21</option>
+        <option value="22">22</option>
+        <option value="23">23</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <strong>Chọn cảm biến:</strong>
+      <select id="gatewaySelect">
+        <option value="sensor_1">GATEWAY 1</option>
+        <option value="sensor_2">GATEWAY 2</option>
+      </select>
+    </div>
+    
+    <div class="section">
+      <button id="displayButton" onclick="updateChartData()">Hiển thị</button>
+    </div>
+    
+    <div class="section">
+      <button id="downloadCSVButton" onclick="downloadAllData()">Tải dữ liệu (CSV)</button>
+    </div>
+
+    <div class="section" id="latestReading">
+      <strong>Dữ liệu mới nhất:</strong><br>
+      <span id="latestInfo">Đang tải...</span>
+    </div>
+
+    <div class="section">
+      <canvas id="myChart" width="200" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Load JavaScript files -->
+  <script src="js/config.js"></script>  <!-- Make sure this defines and initializes Firebase -->
+  <script src="js/utils.js"></script>
+  <script src="js/map.js"></script>     <!-- This should define initMap() -->
+  <script src="js/chart.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

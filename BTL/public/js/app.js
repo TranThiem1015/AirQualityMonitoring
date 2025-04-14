@@ -2,6 +2,7 @@
 
 // Initialize the date picker on page load
 document.addEventListener('DOMContentLoaded', function() {
+    initMap(); 
     handleQueryTypeChange();
     
     // Initialize flatpickr with default settings

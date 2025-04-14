@@ -1,17 +1,16 @@
-// map.js - Google Maps handling functions
-
+// map.js - LeafLetJs handling functions
 let map;
 const markers = {};
-const infoWindows = {};
 const circles = {};
 
-
 function initMap() {
-  const defaultLocation = { lat: 10.762622, lng: 106.660172 }; // Bách Khoa HCM
-  map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 12,
-    center: defaultLocation
-  });
+  const defaultLocation = [10.762622, 106.660172]; // Bách Khoa HCM
+  map = L.map('map').setView(defaultLocation, 12);
+
+  // Add OpenStreetMap tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
 
   loadMapMarkers();
   updateLatestInfo();
@@ -35,61 +34,47 @@ function loadMapMarkers() {
       entries.sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
       const latest = entries[entries.length - 1];
 
-      const pos = { lat: parseFloat(latest.lat), lng: parseFloat(latest.lon) };
+      const pos = [parseFloat(latest.lat), parseFloat(latest.lon)];
+      const color = gatewayColors[sensor];
 
       if (!markers[sensor]) {
-        markers[sensor] = new google.maps.Marker({
-          position: pos,
-          map,
-          icon: getMarkerIcon(gatewayColors[sensor])
-        });
-        infoWindows[sensor] = new google.maps.InfoWindow();
-      } else {
-        markers[sensor].setPosition(pos);
-      }
+        markers[sensor] = L.circleMarker(pos, {
+          radius: 8,
+          color: "#fff",
+          fillColor: color,
+          fillOpacity: 1,
+          weight: 1
+        }).addTo(map);
 
-      const content = `
-        <div>
+        markers[sensor].bindPopup(`
           <strong>Trạm:</strong> ${latest.module}<br>
           <strong>Thời gian:</strong> ${latest.datetime}<br>
           <strong>Nhiệt độ:</strong> ${latest.temp}°C<br>
           <strong>Độ ẩm:</strong> ${latest.hum}%<br>
           <strong>PM2.5:</strong> ${latest.pm25} µg/m³
-        </div>
-      `;
+        `);
 
-      markers[sensor].addListener("mouseover", () => {
-        infoWindows[sensor].setContent(content);
-        infoWindows[sensor].open(map, markers[sensor]);
-      });
+        markers[sensor].on("mouseover", function () {
+          this.openPopup();
+        });
 
-      markers[sensor].addListener("mouseout", () => {
-        infoWindows[sensor].close();
-      });
+        markers[sensor].on("mouseout", function () {
+          this.closePopup();
+        });
+      } else {
+        markers[sensor].setLatLng(pos);
+      }
 
-      if (circles[sensor]) circles[sensor].setMap(null);
-      circles[sensor] = new google.maps.Circle({
-        strokeColor: gatewayColors[sensor],
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: gatewayColors[sensor],
-        fillOpacity: 0.25,
-        map,
-        center: pos,
+      if (circles[sensor]) {
+        circles[sensor].remove();
+      }
+
+      circles[sensor] = L.circle(pos, {
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.2,
         radius: 100
-      });
+      }).addTo(map);
     });
   });
 }
-
-function getMarkerIcon(color) {
-  return {
-    path: google.maps.SymbolPath.CIRCLE,
-    fillColor: color,
-    fillOpacity: 1,
-    strokeColor: "#fff",
-    strokeWeight: 1,
-    scale: 7
-  };
-}
-
